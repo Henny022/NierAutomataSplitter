@@ -14,6 +14,7 @@ state("NieRAutomata", "1.01")
 	string32 currentCutscene : 0x19925E8, 0x1F4;
 	bool isCutscenePlaying : 0x1483974;
 	bool isLoading : 0x147BF50;
+	string255 phaseName : 0x1101D20, 0x68;
 }
 
 init
@@ -32,6 +33,13 @@ init
 
 startup
 {
+	settings.Add("usePhaseNameBasedStart", false, "Alternative Auto-start (BETA)");
+	settings.SetToolTip("usePhaseNameBasedStart", "** Experimental **\n\n"
+	+ "Works with NG Start Game and NG+ Chapter Select to 01-01\n"
+	+ "Overrides 'Detect New Game for auto-start'\n\n"
+	+ "Note: may need timer offset adjusted\n"
+	+ "Note: Only supported in version 1.01");
+
 	settings.Add("detectNewGame", true, "Detect New Game for auto-start");
 	settings.SetToolTip("detectNewGame", "disabling this will make the auto-start work on chapterselect for NG+, but it will also make it work at a lot of other places");
 	settings.Add("startAfterCutscene", false, "auto-start after cutscenes");
@@ -47,6 +55,11 @@ startup
 	settings.Add("movie/ev0040.usm", false, "[B] Oil Machine End", "prologue");
 	settings.Add("movie/ev0050.usm", false, "[B] Marx 1 End", "prologue");
 	settings.Add("movie/ev0060.usm", true , "[A] Marx 1 End", "prologue");
+
+	settings.Add("00_85_A_RobotM_Pro_2ndArea" , false, "[A] Silo 2 End (BETA)", "prologue"); // Phase Name Split
+	settings.Add("00_90_A_RobotM_Pro_3rdArea" , false, "[A] Silo 3 Start (BETA)", "prologue"); // Phase Name Split
+	settings.Add("00_95_A_RobotM_Pro_lastArea", false, "[A] Silo 3 End (BETA)", "prologue"); // Phase Name Split
+
 	settings.Add("movie/ev0070.usm", true , "[A] Marx 2 Start", "prologue");
 	settings.Add("movie/ev0080.usm", true , "[A] Engels Start", "prologue");
 	settings.Add("movie/ev0090.usm", true , "[A] Engels Missiles", "prologue");
@@ -62,33 +75,44 @@ startup
 	settings.Add("movie/evb200.usm", false, "[B] Leaving Bunker", "desert");
 	settings.Add("movie/ev0210.usm", true , "[A] City Ruins Discovery", "desert");
 	settings.Add("movie/ev0220.usm", true , "[A] Resistance Camp Discovery", "desert");
+
+	settings.Add("50_AB_Desert_temple", false, "[A] Anemone Desert Quest (BETA)", "desert"); // Phase Name Split
+	settings.Add("51_AB_MainDesert"   , false, "[A/B] Desert Tunnel (BETA)", "desert"); // Phase Name Split
+
 	settings.Add("movie/ev0225.usm", false, "[A] Desert Discovery", "desert");
 	settings.Add("movie/ev0230.usm", false, "[B] [PB] Spirit of Fire", "desert");
 	settings.Add("movie/ev0240.usm", true , "[A] Housing District", "desert");
 	settings.Add("movie/ev0250.usm", true , "[A/B] Adam 1 Start", "desert");
 	settings.Add("movie/ev0260.usm", true , "[A] Adam 1 End", "desert");
 	settings.Add("movie/ev0262.usm", true , "[B] Adam 1 End", "desert");
+
 	settings.Add("park"            , true , "Amusement Park", "AB");
 	settings.Add("movie/ev0280.usm", false, "[B] [PB] Treasured Items", "park");
+	settings.Add("70_AB_Amusement_Park", false, "[A/B] Amusement Park Sewer Exit (BETA)", "park"); // Phase Name Split
 	settings.Add("movie/ev0290.usm", false, "[A] Amusement Park Discovery", "park");
+	// settings.Add("70_10_AB_Park_Tank", false,   "[A/B] Let's Play (BETA)", "park"); // Phase Name Split
 	settings.Add("movie/ev0300.usm", true , "[A/B] Beauvoir Start", "park");
 	settings.Add("movie/ev0310.usm", true , "[A/B] Beauvoir Hacking", "park");
 	settings.Add("movie/ev0320.usm", true , "[A] Beauvoir End", "park");
 	settings.Add("movie/ev0322.usm", true , "[B] Beauvoir Fight Finish", "park");
 	settings.Add("movie/ev0323.usm", false, "[B] Beauvoir Dies", "park");
+
 	settings.Add("ruins"           , true , "Devastated Ruins", "AB");
 	settings.Add("movie/ev0325.usm", true , "[A] Pascal's Village", "ruins");
+	settings.Add("90_00_AB_Ruined_City", false, "[A/B] City Engels Start (BETA)", "ruins"); // Phase Name Split
 	settings.Add("movie/ev0330.usm", true , "[A/B] City Engels End", "ruins");
 	settings.Add("movie/ev0340.usm", false, "[A/B] Negotiations Start", "ruins");
 	settings.Add("movie/ev0350.usm", true , "[A] Negotiations Finish", "ruins");
 	settings.Add("movie/ev0352.usm", true , "[B] Negotiations Finish", "ruins");
 	settings.Add("movie/ev0360.usm", false, "[B] [PB] Parenticide", "ruins");
+
 	settings.Add("forest"          , true , "Forest", "AB");
 	settings.Add("movie/ev0370.usm", true , "[A/B] Commercial Facility (Emil)", "forest");
 	settings.Add("movie/ev0380.usm", true , "[A] Forest Discovery", "forest");
 	settings.Add("movie/ev0390.usm", true , "[A/B] A2 Start", "forest");
 	settings.Add("movie/ev0400.usm", true , "[A/B] A2 End", "forest");
 	settings.Add("movie/ev0410.usm", false, "[B] [PB] The Kind King", "forest");
+
 	settings.Add("floodedCity"     , true , "Flooded City", "AB");
 	settings.Add("movie/ev0420.usm", false, "[B] [PB] In the Deep Sea", "floodedCity");
 	settings.Add("movie/ev0430.usm", true , "[A] Flooded City Discovery", "floodedCity");
@@ -220,19 +244,40 @@ startup
 	settings.SetToolTip("movie/ev1310.usm", "Picture Book, DLC");
 	settings.SetToolTip("movie/ev1290.usm", "Picture Book, DLC");
 	settings.SetToolTip("movie/ev1300.usm", "Picture Book, DLC");
+
+	settings.SetToolTip("00_85_A_RobotM_Pro_2ndArea" , "Splits after exiting Silo 2 / approaching bridge\n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("00_90_A_RobotM_Pro_3rdArea" , "Splits in corridor before entering Silo 3\n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("00_95_A_RobotM_Pro_lastArea", "Splits after exiting Silo 3 / approaching Engels \n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("50_AB_Desert_temple"        , "Splits when accepting Anemone's Quest after Trader Quests\n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("51_AB_MainDesert"           , "Splits when objective changes in desert tunnel (OOB or in-bounds)\n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("70_AB_Amusement_Park"       , "Splits when exiting sewers towards Amusement Park\n" + "Note: Only supported in version 1.01");
+	// settings.SetToolTip("70_10_AB_Park_Tank"         , "Splits when hitting 'Tank' (Let's Play) trigger\n" + "Note: Only supported in version 1.01");
+	settings.SetToolTip("90_00_AB_Ruined_City"       , "Splits after delivering filter to Pascal / when City Engels attacks\n" + "Note: Only supported in version 1.01");
+
+	vars.PreviousPhaseName = "UNDEF";
 }
 
-start 
+start
 {
-	// Thanks Kate for this auto-start logic
-	if ((current.playerNameSetStatus == 1 || !settings["detectNewGame"]) && current.isWorldLoaded && !old.isWorldLoaded)
+	if (version == "1.01" && settings["usePhaseNameBasedStart"])
 	{
-		return true;
+		if (current.phaseName == "00_30_A_RobotM_Prologue_STG1" && vars.PreviousPhaseName == "START")
+		{
+			return true;
+		}
 	}
-	
-	if(settings["startAfterCutscene"] && old.isCutscenePlaying && !current.isCutscenePlaying)
+	else
 	{
-		return true;
+		// Thanks Kate for this auto-start logic
+		if ((current.playerNameSetStatus == 1 || !settings["detectNewGame"]) && current.isWorldLoaded && !old.isWorldLoaded)
+		{
+			return true;
+		}
+		
+		if(settings["startAfterCutscene"] && old.isCutscenePlaying && !current.isCutscenePlaying)
+		{
+			return true;
+		}
 	}
 }
 
@@ -241,6 +286,20 @@ split
 	if(current.isCutscenePlaying && !old.isCutscenePlaying)
 	{
 		return (settings.ContainsKey(current.currentCutscene) && settings[current.currentCutscene]) || settings["splitAnyCutscene"];
+	}
+
+	if (version == "1.01") {
+		// Loading screens set phaseName to empty string
+		if (current.phaseName.Length == 0 && old.phaseName.Length > 0)
+		{
+			vars.PreviousPhaseName = old.phaseName;
+		}
+
+		if (current.phaseName != vars.PreviousPhaseName && current.phaseName != old.phaseName && current.phaseName.Length > 0)
+		{
+			print("LiveSplit Debug - Phase change: " + current.phaseName);
+			return settings.ContainsKey(current.phaseName) && settings[current.phaseName];
+		}
 	}
 }
 

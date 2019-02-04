@@ -9,16 +9,21 @@
 #include <windows.h>
 #include <tlhelp32.h>
 
-class MemoryHandler {
+class MemoryHandler
+{
 private:
     HANDLE process;
 protected:
 
     template<typename type>
-    type get(uint64_t address) {
+    type get(uint64_t address)
+    {
         type buffer;
-        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, sizeof(buffer), nullptr)) {
-        } else {
+        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, sizeof(buffer), nullptr))
+        {
+        }
+        else
+        {
             DWORD error = GetLastError();
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
@@ -31,11 +36,15 @@ protected:
     }
 
     template<size_t length>
-    std::string getString(uint64_t address) {
+    std::string getString(uint64_t address)
+    {
         char buffer[length + 1];
-        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, length, nullptr)) {
+        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, length, nullptr))
+        {
             buffer[length] = '\0';
-        } else {
+        }
+        else
+        {
             DWORD error = GetLastError();
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
@@ -48,9 +57,13 @@ protected:
     }
 
     template<typename type>
-    void set(uint64_t address, type value) {
-        if (connected && WriteProcessMemory(process, (LPVOID) address, &value, sizeof(value), nullptr)) {
-        } else {
+    void set(uint64_t address, type value)
+    {
+        if (connected && WriteProcessMemory(process, (LPVOID) address, &value, sizeof(value), nullptr))
+        {
+        }
+        else
+        {
             DWORD error = GetLastError();
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
@@ -63,7 +76,8 @@ protected:
 public:
     bool connected = false;
 
-    bool connect() {
+    bool connect()
+    {
         PROCESSENTRY32 entry;
         entry.dwSize = sizeof(PROCESSENTRY32);
 
@@ -73,7 +87,7 @@ public:
         {
             while (Process32Next(snapshot, &entry) == TRUE)
             {
-                if (_stricmp(entry.szExeFile, "NieRAutomata.exe") == 0)
+                if (strcmp(entry.szExeFile, "NieRAutomata.exe") == 0)
                 {
                     process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
                     connected = true;
@@ -85,7 +99,12 @@ public:
         return false;
     }
 
-    void disconnect() {
+    void disconnect()
+    {
+        if (!connected)
+        {
+            return;
+        }
         CloseHandle(process);
         connected = false;
         std::cout << "Disconnected from NieR:Automata process" << std::endl;

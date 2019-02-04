@@ -60,9 +60,13 @@ class LiveSplitSettings
         {
             auto setting = settingsMap.find(name);
             if (setting == settingsMap.end())
+            {
                 return "No setting for " + name + " exists";
+            }
             else
+            {
                 return settingsMap.at(name).toString();
+            }
         }
     };
 

@@ -1,12 +1,3 @@
-state("NieRAutomata", "1.0")
-{
-	bool isWorldLoaded : 0x18F3978;
-	byte playerNameSetStatus : 0x1461B38;
-	string32 currentCutscene : 0x1978868, 0x1F4;
-	bool isCutscenePlaying : 0x146A1AC;
-	bool isLoading : 0x18DD444;
-}
-
 state("NieRAutomata", "1.01")
 {
 	bool isWorldLoaded : 0x110ADC0;
@@ -14,32 +5,32 @@ state("NieRAutomata", "1.01")
 	string32 currentCutscene : 0x19925E8, 0x1F4;
 	bool isCutscenePlaying : 0x1483974;
 	bool isLoading : 0x147BF50;
-	string255 phaseName : 0x1101D20, 0x68;
+	string255 phaseName : 0x1101D30; // 0x1101D20, 0x68;
 }
 
 init
 {
 	int moduleSize = modules.First().ModuleMemorySize;
 	switch (moduleSize) {
-		case 113471488:
-			version = "1.0";
-			break;
 		case 106266624:
 			version = "1.01";
 			break;
+	}
+
+	if (version != "1.01")
+	{
+		MessageBox.Show(timer.Form,
+			"This version of NieR:Automata is not supported.\n\n"
+			+ "Update to 1.01 for autosplit support",
+			"Warning",
+			MessageBoxButtons.OK,
+			MessageBoxIcon.Warning);
 	}
 	print("ModuleMemorySize: " + modules.First().ModuleMemorySize.ToString());
 }
 
 startup
 {
-	settings.Add("usePhaseNameBasedStart", false, "Alternative Auto-start (BETA)");
-	settings.SetToolTip("usePhaseNameBasedStart", "** Experimental **\n\n"
-	+ "Works with NG Start Game and NG+ Chapter Select to 01-01\n"
-	+ "Overrides 'Detect New Game for auto-start'\n\n"
-	+ "Note: may need timer offset adjusted\n"
-	+ "Note: Only supported in version 1.01");
-
 	settings.Add("detectNewGame", true, "Detect New Game for auto-start");
 	settings.SetToolTip("detectNewGame", "disabling this will make the auto-start work on chapterselect for NG+, but it will also make it work at a lot of other places");
 	settings.Add("startAfterCutscene", false, "auto-start after cutscenes");
@@ -90,7 +81,6 @@ startup
 	settings.Add("movie/ev0280.usm", false, "[B] [PB] Treasured Items", "park");
 	settings.Add("70_AB_Amusement_Park", false, "[A/B] Amusement Park Sewer Exit (BETA)", "park"); // Phase Name Split
 	settings.Add("movie/ev0290.usm", false, "[A] Amusement Park Discovery", "park");
-	// settings.Add("70_10_AB_Park_Tank", false,   "[A/B] Let's Play (BETA)", "park"); // Phase Name Split
 	settings.Add("movie/ev0300.usm", true , "[A/B] Beauvoir Start", "park");
 	settings.Add("movie/ev0310.usm", true , "[A/B] Beauvoir Hacking", "park");
 	settings.Add("movie/ev0320.usm", true , "[A] Beauvoir End", "park");
@@ -136,6 +126,7 @@ startup
 	settings.Add("movie/ev0552.usm", true , "[] Copied City Finish", "copiedCity");
 	settings.Add("factory"         , true , "Factory", "AB");
 	settings.Add("movie/ev0560.usm", false, "[B] 9S awakens", "factory");
+	settings.Add("140_00_A_RobotM_CrazyReligion", false, "[A] Meeting Pascal at Factory (BETA)", "factory"); // Phase Name Split
 	settings.Add("movie/ev0570.usm", true , "[A] Mooks Start", "factory");
 	settings.Add("movie/ev0580.usm", true , "[A/B] So-Shi End", "factory");
 	settings.Add("movie/ev0590.usm", false, "[B] [PB] Together", "factory");
@@ -245,39 +236,27 @@ startup
 	settings.SetToolTip("movie/ev1290.usm", "Picture Book, DLC");
 	settings.SetToolTip("movie/ev1300.usm", "Picture Book, DLC");
 
-	settings.SetToolTip("00_85_A_RobotM_Pro_2ndArea" , "Splits after exiting Silo 2 / approaching bridge\n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("00_90_A_RobotM_Pro_3rdArea" , "Splits in corridor before entering Silo 3\n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("00_95_A_RobotM_Pro_lastArea", "Splits after exiting Silo 3 / approaching Engels \n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("50_AB_Desert_temple"        , "Splits when accepting Anemone's Quest after Trader Quests\n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("51_AB_MainDesert"           , "Splits when objective changes in desert tunnel (OOB or in-bounds)\n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("70_AB_Amusement_Park"       , "Splits when exiting sewers towards Amusement Park\n" + "Note: Only supported in version 1.01");
-	// settings.SetToolTip("70_10_AB_Park_Tank"         , "Splits when hitting 'Tank' (Let's Play) trigger\n" + "Note: Only supported in version 1.01");
-	settings.SetToolTip("90_00_AB_Ruined_City"       , "Splits after delivering filter to Pascal / when City Engels attacks\n" + "Note: Only supported in version 1.01");
-
-	vars.PreviousPhaseName = "UNDEF";
+	settings.SetToolTip("00_85_A_RobotM_Pro_2ndArea" , "Splits after exiting Silo 2 / approaching bridge");
+	settings.SetToolTip("00_90_A_RobotM_Pro_3rdArea" , "Splits in corridor before entering Silo 3");
+	settings.SetToolTip("00_95_A_RobotM_Pro_lastArea", "Splits after exiting Silo 3 / approaching Engels");
+	settings.SetToolTip("50_AB_Desert_temple"        , "Splits when accepting Anemone's Quest after Trader Quests");
+	settings.SetToolTip("51_AB_MainDesert"           , "Splits when objective changes in desert tunnel (OOB or in-bounds)");
+	settings.SetToolTip("70_AB_Amusement_Park"       , "Splits when exiting sewers towards Amusement Park");
+	settings.SetToolTip("90_00_AB_Ruined_City"       , "Splits after delivering filter to Pascal / when City Engels attacks");
+	settings.SetToolTip("140_00_A_RobotM_CrazyReligion"       , "Splits when meeting Pascal at Factory");
 }
 
 start
 {
-	if (version == "1.01" && settings["usePhaseNameBasedStart"])
+	// Thanks Kate for this auto-start logic
+	if ((current.playerNameSetStatus == 1 || !settings["detectNewGame"]) && current.isWorldLoaded && !old.isWorldLoaded)
 	{
-		if (current.phaseName == "00_30_A_RobotM_Prologue_STG1" && vars.PreviousPhaseName == "START")
-		{
-			return true;
-		}
+		return true;
 	}
-	else
+
+	if(settings["startAfterCutscene"] && old.isCutscenePlaying && !current.isCutscenePlaying)
 	{
-		// Thanks Kate for this auto-start logic
-		if ((current.playerNameSetStatus == 1 || !settings["detectNewGame"]) && current.isWorldLoaded && !old.isWorldLoaded)
-		{
-			return true;
-		}
-		
-		if(settings["startAfterCutscene"] && old.isCutscenePlaying && !current.isCutscenePlaying)
-		{
-			return true;
-		}
+		return true;
 	}
 }
 
@@ -288,18 +267,10 @@ split
 		return (settings.ContainsKey(current.currentCutscene) && settings[current.currentCutscene]) || settings["splitAnyCutscene"];
 	}
 
-	if (version == "1.01") {
-		// Loading screens set phaseName to empty string
-		if (current.phaseName.Length == 0 && old.phaseName.Length > 0)
-		{
-			vars.PreviousPhaseName = old.phaseName;
-		}
-
-		if (current.phaseName != vars.PreviousPhaseName && current.phaseName != old.phaseName && current.phaseName.Length > 0)
-		{
-			print("LiveSplit Debug - Phase change: " + current.phaseName);
-			return settings.ContainsKey(current.phaseName) && settings[current.phaseName];
-		}
+	if (current.phaseName != old.phaseName)
+	{
+		print("LiveSplit Debug - Phase change: " + current.phaseName);
+		return settings[current.phaseName];
 	}
 }
 

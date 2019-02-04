@@ -77,7 +77,7 @@ public:
 
             // log phase
             currentPhaseName = memoryHandler.getCurrentPhase();
-            if(currentPhaseName != previousPhaseName)
+            if(currentPhaseName != previousPhaseName && currentPhaseName != "")
             {
                 logfile << "Phase: " << currentPhaseName << std::endl;
             }

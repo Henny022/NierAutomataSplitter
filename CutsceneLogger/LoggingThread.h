@@ -37,12 +37,16 @@ public:
     {
         std::time_t result = std::time(nullptr);
         logfile << std::asctime(std::localtime(&result)) << std::endl;
-        bool previous = false;
-        bool current;
-        std::string previousCutscene;
-        std::string currentCutscene;
+
+        bool currentIsCutscenePlaying;
+        bool previousIsCutscenePlaying = false;
+        std::string currentCutsceneName;
+        std::string previousCutsceneName;
+        std::string currentPhaseName;
+        std::string previousPhaseName;
         while (!abortSignal)
         {
+            // check connection
             if (!memoryHandler.connected)
             {
                 std::cout << "trying to connect to NieR:Automata process" << std::endl;
@@ -54,22 +58,33 @@ public:
                 }
                 logfile << "connected" << std::endl;
             }
-            current = memoryHandler.isCutscenePlaying();
-            if (current && !previous)
+
+            // log cutscene
+            currentIsCutscenePlaying = memoryHandler.isCutscenePlaying();
+            if (currentIsCutscenePlaying && !previousIsCutscenePlaying)
             {
                 std::cout << "\r"
                           << "                                                                                                     "
                           << "\r";
-                currentCutscene = settings.getSettingString(memoryHandler.getCurrentCutscene());
-                std::cout << currentCutscene << (currentCutscene == previousCutscene ? " !DUPLICATE!" : "");
-                logfile << currentCutscene << std::endl;
+                currentCutsceneName = settings.getSettingString(memoryHandler.getCurrentCutscene());
+                std::cout << "Cutscene: " << currentCutsceneName << (currentCutsceneName == previousCutsceneName ? " !DUPLICATE!" : "");
+                logfile << "Cutscene: " << currentCutsceneName << std::endl;
             }
-            else if (!current && previous)
+            else if (!currentIsCutscenePlaying && previousIsCutscenePlaying)
             {
                 //std::cout << "\r" << "                                                                                                     " << "\r";
             }
-            previous = current;
-            previousCutscene = currentCutscene;
+
+            // log phase
+            currentPhaseName = memoryHandler.getCurrentPhase();
+            if(currentPhaseName != previousPhaseName)
+            {
+                logfile << "Phase: " << currentPhaseName << std::endl;
+            }
+
+            previousIsCutscenePlaying = currentIsCutscenePlaying;
+            previousCutsceneName = currentCutsceneName;
+            previousPhaseName = currentPhaseName;
         }
         memoryHandler.disconnect();
     }

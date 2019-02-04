@@ -7,23 +7,31 @@
 
 #include "MemoryHandler.h"
 
-class NierAutomataMemoryHandler : public MemoryHandler {
+class NierAutomataMemoryHandler : public MemoryHandler
+{
 public:
-    float getGameSpeed() {
+    float getGameSpeed()
+    {
         return get<float>(0x14160E6D8);
     }
 
-    float getX() {
+    float getX()
+    {
         return get<float>(get<UINT_PTR>(0x1416053E8) + 0x50);
     }
-    float getY() {
+
+    float getY()
+    {
         return get<float>(get<UINT_PTR>(0x1416053E8) + 0x58);
     }
-    float getZ() {
+
+    float getZ()
+    {
         return get<float>(get<UINT_PTR>(0x1416053E8) + 0x54);
     }
 
-    void setGameSpeed(float speed) {
+    void setGameSpeed(float speed)
+    {
         set(0x14160E6D8, speed);
     }
 
@@ -42,12 +50,20 @@ public:
         return get<bool>(0x14110ADC0);
     }
 
-    bool isCutscenePlaying() {
+    bool isCutscenePlaying()
+    {
         return get<bool>(0x141483974);
     }
 
-    std::string getCurrentCutscene() {
+    std::string getCurrentCutscene()
+    {
         return getString<16>(get<UINT_PTR>(0x1419925E8) + 0x1f4);
     }
+
+    std::string getCurrentPhase()
+    {
+        return getString<0x28>(0x141101d58);
+    }
 };
+
 #endif //NIERAUTOMATAPRACTICETOOL_MEMORYEDITOR_H

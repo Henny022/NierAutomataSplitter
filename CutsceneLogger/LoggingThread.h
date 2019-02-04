@@ -6,8 +6,10 @@
 #define NIERAUTOMATAPRACTICETOOL_LOGGINGTHREAD_H
 
 #include <iostream>
+#include <iomanip>
 #include <atomic>
 #include <fstream>
+#include <ctime>
 
 #include "LiveSplitSettings.h"
 #include "NierAutomataMemoryHandler.h"
@@ -24,13 +26,13 @@ public:
 
     LoggingThread()
     {
+        abortSignal = false;
         logfile = std::ofstream("log.txt", std::ios::out | std::ios::app);
     }
 
     void abort()
     {
         abortSignal = true;
-        std::cout << "aborting logging" << std::endl;
     }
 
     void run()
@@ -63,29 +65,30 @@ public:
             currentIsCutscenePlaying = memoryHandler.isCutscenePlaying();
             if (currentIsCutscenePlaying && !previousIsCutscenePlaying)
             {
-                std::cout << "\r"
-                          << "                                                                                                     "
-                          << "\r";
                 currentCutsceneName = settings.getSettingString(memoryHandler.getCurrentCutscene());
-                std::cout << "Cutscene: " << currentCutsceneName << (currentCutsceneName == previousCutsceneName ? " !DUPLICATE!" : "");
                 logfile << "Cutscene: " << currentCutsceneName << std::endl;
-            }
-            else if (!currentIsCutscenePlaying && previousIsCutscenePlaying)
-            {
-                //std::cout << "\r" << "                                                                                                     " << "\r";
             }
 
             // log phase
             currentPhaseName = memoryHandler.getCurrentPhase();
-            if(currentPhaseName != previousPhaseName && currentPhaseName != "")
+            if (currentPhaseName != previousPhaseName && !currentPhaseName.empty())
             {
                 logfile << "Phase: " << currentPhaseName << std::endl;
             }
 
+            if (!abortSignal)
+            {
+                std::cout << "\rCutscene: " << std::left << std::setfill(' ') << std::setw(60)
+                          << currentCutsceneName.substr(0, 60)
+                          << " | Phase: " << std::left << std::setfill(' ') << std::setw(39)
+                          << currentPhaseName
+                          << std::flush;
+            }
             previousIsCutscenePlaying = currentIsCutscenePlaying;
             previousCutsceneName = currentCutsceneName;
             previousPhaseName = currentPhaseName;
         }
+        std::cout << "disconnecting" << std::endl;
         memoryHandler.disconnect();
     }
 };

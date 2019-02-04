@@ -4,8 +4,6 @@ its a autosplitter for NieR:Automata, so its a NierAutomataSplitter (really bad 
 ## Features:
 * Configure which cutscenes to split on
 * **NEW** Experimental support for non-cutscene autosplit
-* **NEW** Experimental support for autostart that is compatible with both NG and NG+
-  * Note: May need a different timer start offset from 2.18 for NG and 2.40 for NG+
 
 ### Additional supported splits:
 * Prologue
@@ -19,3 +17,8 @@ its a autosplitter for NieR:Automata, so its a NierAutomataSplitter (really bad 
   * [A/B] Amusement Park Sewer Exit
 * Machine Village
   * [A/B] City Engels Attack Start
+* Flooded City
+  * [A/B] Shore Fight End / Flight Units Arriving
+* Deep Factory
+  * [A] Meet Pascal at Factory
+  * [A] Pre So-shi Elevator

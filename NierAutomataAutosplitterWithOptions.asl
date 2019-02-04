@@ -21,7 +21,7 @@ init
 	{
 		MessageBox.Show(timer.Form,
 			"This version of NieR:Automata is not supported.\n\n"
-			+ "Update to 1.01 for autosplit support",
+			+ "Use 1.01 for autosplitter support",
 			"Warning",
 			MessageBoxButtons.OK,
 			MessageBoxIcon.Warning);
@@ -106,6 +106,7 @@ startup
 	settings.Add("floodedCity"     , true , "Flooded City", "AB");
 	settings.Add("movie/ev0420.usm", false, "[B] [PB] In the Deep Sea", "floodedCity");
 	settings.Add("movie/ev0430.usm", true , "[A] Flooded City Discovery", "floodedCity");
+	settings.Add("90_AB_Battle_Submerge_City", false, "[A/B] Shore Fight Finish / Flight Units Arriving (BETA)", "floodedCity"); // Phase Name Split
 	settings.Add("movie/ev0440.usm", true , "[A/B] Grun Start", "floodedCity");
 	settings.Add("movie/ev0450.usm", true , "[A/B] Grun \"Laser\"", "floodedCity");
 	settings.Add("movie/ev0460.usm", false, "[A/B] Grun Mortar Hit (not triggered)", "floodedCity");
@@ -126,8 +127,9 @@ startup
 	settings.Add("movie/ev0552.usm", true , "[] Copied City Finish", "copiedCity");
 	settings.Add("factory"         , true , "Factory", "AB");
 	settings.Add("movie/ev0560.usm", false, "[B] 9S awakens", "factory");
-	settings.Add("140_00_A_RobotM_CrazyReligion", false, "[A] Meeting Pascal at Factory (BETA)", "factory"); // Phase Name Split
+	settings.Add("140_00_A_RobotM_CrazyReligion" , false, "[A] Meeting Pascal at Factory (BETA)", "factory"); // Phase Name Split
 	settings.Add("movie/ev0570.usm", true , "[A] Mooks Start", "factory");
+	settings.Add("140_80_A_RobotM_CR_UF_BossArea", false, "[A] Silo Before So-shi (BETA)", "factory"); // Phase Name Split
 	settings.Add("movie/ev0580.usm", true , "[A/B] So-Shi End", "factory");
 	settings.Add("movie/ev0590.usm", false, "[B] [PB] Together", "factory");
 	settings.Add("movie/ev0600.usm", false, "[B] YoRHa truth revealed", "factory");
@@ -236,14 +238,15 @@ startup
 	settings.SetToolTip("movie/ev1290.usm", "Picture Book, DLC");
 	settings.SetToolTip("movie/ev1300.usm", "Picture Book, DLC");
 
-	settings.SetToolTip("00_85_A_RobotM_Pro_2ndArea" , "Splits after exiting Silo 2 / approaching bridge");
-	settings.SetToolTip("00_90_A_RobotM_Pro_3rdArea" , "Splits in corridor before entering Silo 3");
-	settings.SetToolTip("00_95_A_RobotM_Pro_lastArea", "Splits after exiting Silo 3 / approaching Engels");
-	settings.SetToolTip("50_AB_Desert_temple"        , "Splits when accepting Anemone's Quest after Trader Quests");
-	settings.SetToolTip("51_AB_MainDesert"           , "Splits when objective changes in desert tunnel (OOB or in-bounds)");
-	settings.SetToolTip("70_AB_Amusement_Park"       , "Splits when exiting sewers towards Amusement Park");
-	settings.SetToolTip("90_00_AB_Ruined_City"       , "Splits after delivering filter to Pascal / when City Engels attacks");
-	settings.SetToolTip("140_00_A_RobotM_CrazyReligion"       , "Splits when meeting Pascal at Factory");
+	settings.SetToolTip("00_85_A_RobotM_Pro_2ndArea"    , "Splits after exiting Silo 2 / approaching bridge");
+	settings.SetToolTip("00_90_A_RobotM_Pro_3rdArea"    , "Splits in corridor before entering Silo 3");
+	settings.SetToolTip("00_95_A_RobotM_Pro_lastArea"   , "Splits after exiting Silo 3 / approaching Engels");
+	settings.SetToolTip("50_AB_Desert_temple"           , "Splits when accepting Anemone's Quest after Trader Quests");
+	settings.SetToolTip("51_AB_MainDesert"              , "Splits when objective changes in desert tunnel (OOB or in-bounds)");
+	settings.SetToolTip("70_AB_Amusement_Park"          , "Splits when exiting sewers towards Amusement Park");
+	settings.SetToolTip("90_00_AB_Ruined_City"          , "Splits after delivering filter to Pascal / when City Engels attacks");
+	settings.SetToolTip("140_00_A_RobotM_CrazyReligion" , "Splits when meeting Pascal at Factory");
+	settings.SetToolTip("140_80_A_RobotM_CR_UF_BossArea", "Splits when 9S calls in silo before So-shi");
 }
 
 start

@@ -267,12 +267,12 @@ split
 {
 	if(current.isCutscenePlaying && !old.isCutscenePlaying)
 	{
-		return (settings.ContainsKey(current.currentCutscene) && settings[current.currentCutscene]) || settings["splitAnyCutscene"];
+		return settings[current.currentCutscene] || settings["splitAnyCutscene"];
 	}
 
 	if (current.phaseName != old.phaseName)
 	{
-		print("LiveSplit Debug - Phase change: " + current.phaseName);
+		//print("LiveSplit Debug - Phase change: " + current.phaseName);
 		return settings[current.phaseName];
 	}
 }

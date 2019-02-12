@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <atomic>
 #include <fstream>
-#include <ctime>
+#include <chrono>
 
 #include "LiveSplitSettings.h"
 #include "NierAutomataMemoryHandler.h"
@@ -37,15 +37,18 @@ public:
 
     void run()
     {
-        std::time_t result = std::time(nullptr);
-        logfile << std::asctime(std::localtime(&result)) << std::endl;
+        auto startTime = std::chrono::system_clock::now();
+        auto cstartT = std::chrono::system_clock::to_time_t(startTime);
+        logfile << std::ctime(&cstartT) << std::endl;
 
         bool currentIsCutscenePlaying;
         bool previousIsCutscenePlaying = false;
         std::string currentCutsceneName;
         std::string previousCutsceneName;
-        std::string currentPhaseName;
-        std::string previousPhaseName;
+        //std::string currentPhaseName;
+        //std::string previousPhaseName;
+        std::string currentDelayedPhaseName;
+        std::string previousDelayedPhaseName;
         while (!abortSignal)
         {
             // check connection
@@ -61,6 +64,9 @@ public:
                 logfile << "connected" << std::endl;
             }
 
+            //auto nowTime = std::chrono::system_clock::now();
+            //auto t =(nowTime - startTime).count();
+
             // log cutscene
             currentIsCutscenePlaying = memoryHandler.isCutscenePlaying();
             if (currentIsCutscenePlaying && !previousIsCutscenePlaying)
@@ -70,23 +76,32 @@ public:
             }
 
             // log phase
-            currentPhaseName = memoryHandler.getCurrentPhase();
-            if (currentPhaseName != previousPhaseName && !currentPhaseName.empty())
+            //currentPhaseName = memoryHandler.getCurrentPhase();
+            //if (currentPhaseName != previousPhaseName)
+            //{
+            //    logfile << "Phase: " << currentPhaseName << " at t+" << t << "ms" << std::endl;
+            //}
+
+            // log delayed phase
+            currentDelayedPhaseName = memoryHandler.getDelayedPhase();
+            if (currentDelayedPhaseName != previousDelayedPhaseName)
             {
-                logfile << "Phase: " << currentPhaseName << std::endl;
+                logfile << "Delayed Phase: " << currentDelayedPhaseName << std::endl;
             }
 
-            if (!abortSignal)
-            {
-                std::cout << "\rCutscene: " << std::left << std::setfill(' ') << std::setw(60)
-                          << currentCutsceneName.substr(0, 60)
-                          << " | Phase: " << std::left << std::setfill(' ') << std::setw(39)
-                          << currentPhaseName
-                          << std::flush;
-            }
+            //if (!abortSignal)
+            //{
+            //    std::cout << "\rCutscene: " << std::left << std::setfill(' ') << std::setw(60)
+            //              << currentCutsceneName.substr(0, 60)
+            //              << " | Phase: " << std::left << std::setfill(' ') << std::setw(39)
+            //              << currentPhaseName
+            //              << std::flush;
+            //}
+
             previousIsCutscenePlaying = currentIsCutscenePlaying;
             previousCutsceneName = currentCutsceneName;
-            previousPhaseName = currentPhaseName;
+            //previousPhaseName = currentPhaseName;
+            previousDelayedPhaseName = currentDelayedPhaseName;
         }
         std::cout << "disconnecting" << std::endl;
         memoryHandler.disconnect();

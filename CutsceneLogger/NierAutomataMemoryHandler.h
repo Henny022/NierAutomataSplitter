@@ -64,6 +64,11 @@ public:
     {
         return getString<0x28>(0x141101d58);
     }
+
+    std::string getDelayedPhase()
+    {
+        return getString<0x28>(0x141101d30);
+    }
 };
 
 #endif //NIERAUTOMATAPRACTICETOOL_MEMORYEDITOR_H

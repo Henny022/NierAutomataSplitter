@@ -38,6 +38,7 @@ protected:
     template<size_t length>
     std::string getString(uint64_t address)
     {
+		size_t i = length;
         char buffer[length + 1];
         if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, length, nullptr))
         {
@@ -91,7 +92,7 @@ public:
                 {
                     process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
                     connected = true;
-                    std::cout << "Connected to NieR:Automata process" << std::endl;
+                    std::cout << "Connected to NieR:Automata process " << entry.th32ProcessID << std::endl;
                     return true;
                 }
             }

@@ -10,6 +10,10 @@
 class NierAutomataMemoryHandler : public MemoryHandler
 {
 public:
+	NierAutomataMemoryHandler() : MemoryHandler("NieRAutomata.exe")
+	{
+	}
+
     float getGameSpeed()
     {
         return get<float>(0x14160E6D8);

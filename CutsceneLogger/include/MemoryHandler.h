@@ -8,18 +8,20 @@
 
 #include <windows.h>
 #include <tlhelp32.h>
+#include <utility>
 
 class MemoryHandler
 {
 private:
-    HANDLE process;
+    HANDLE _process;
+	std::string _filename;
 protected:
 
-    template<typename type>
-    type get(uint64_t address)
+    template<typename Type>
+    Type get(const uint64_t address)
     {
-        type buffer;
-        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, sizeof(buffer), nullptr))
+        Type buffer;
+        if (connected && ReadProcessMemory(_process, reinterpret_cast<LPVOID>(address), &buffer, sizeof(buffer), nullptr))
         {
         }
         else
@@ -28,19 +30,17 @@ protected:
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
             {
-                disconnect();
+				throw std::runtime_error("connection error");
             }
-            return type();
         }
         return buffer;
     }
 
     template<size_t length>
-    std::string getString(uint64_t address)
+    std::string getString(const uint64_t address)
     {
-		size_t i = length;
         char buffer[length + 1];
-        if (connected && ReadProcessMemory(process, (LPVOID) address, &buffer, length, nullptr))
+        if (connected && ReadProcessMemory(_process, reinterpret_cast<LPVOID>(address), &buffer, length, nullptr))
         {
             buffer[length] = '\0';
         }
@@ -50,17 +50,16 @@ protected:
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
             {
-                disconnect();
+				throw std::runtime_error("connection error");
             }
-            return "";
         }
         return std::string(buffer);
     }
 
-    template<typename type>
-    void set(uint64_t address, type value)
+    template<typename Type>
+    void set(const uint64_t address, Type value)
     {
-        if (connected && WriteProcessMemory(process, (LPVOID) address, &value, sizeof(value), nullptr))
+        if (connected && WriteProcessMemory(_process, reinterpret_cast<LPVOID>(address), &value, sizeof(value), nullptr))
         {
         }
         else
@@ -69,13 +68,17 @@ protected:
             std::cout << "Error: " << error << std::endl;
             if (error == 299)
             {
-                disconnect();
+				throw std::runtime_error("connection error");
             }
         }
     }
 
 public:
-    bool connected = false;
+    volatile bool connected = false;
+
+    explicit MemoryHandler(std::string filename) : _process(nullptr), _filename(std::move(filename))
+	{
+	}
 
     bool connect()
     {
@@ -88,11 +91,11 @@ public:
         {
             while (Process32Next(snapshot, &entry) == TRUE)
             {
-                if (strcmp(entry.szExeFile, "NieRAutomata.exe") == 0)
+                if (strcmp(entry.szExeFile, _filename.c_str()) == 0)
                 {
-                    process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
+                    _process = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
                     connected = true;
-                    std::cout << "Connected to NieR:Automata process " << entry.th32ProcessID << std::endl;
+                    std::cout << "Connected to " << _filename << " process " << entry.th32ProcessID << std::endl;
                     return true;
                 }
             }
@@ -106,9 +109,9 @@ public:
         {
             return;
         }
-        CloseHandle(process);
+        CloseHandle(_process);
         connected = false;
-        std::cout << "Disconnected from NieR:Automata process" << std::endl;
+        std::cout << "Disconnected from " << _filename << " process" << std::endl;
     }
 };
 

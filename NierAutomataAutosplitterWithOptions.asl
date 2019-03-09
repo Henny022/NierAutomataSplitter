@@ -5,7 +5,8 @@ state("NieRAutomata", "1.01")
 	string32 currentCutscene : 0x19925E8, 0x1F4;
 	bool isCutscenePlaying : 0x1483974;
 	bool isLoading : 0x147BF50;
-	string255 phaseName : 0x1101D30; // 0x1101D20, 0x68;
+	string40 phaseName : 0x1101D30; // 0x1101D20, 0x68;
+	string40 chapterselectPhase : 0x1985548;
 }
 
 init
@@ -32,6 +33,7 @@ init
 startup
 {
 	settings.Add("detectNewGame", true, "Detect New Game for auto-start");
+	settings.Add("betaStart", false, "Start using phase names (BETA)");
 	settings.SetToolTip("detectNewGame", "disabling this will make the auto-start work on chapterselect for NG+, but it will also make it work at a lot of other places");
 	settings.Add("startAfterCutscene", false, "auto-start after cutscenes");
 	settings.SetToolTip("startAfterCutscene", "usefull for testing");
@@ -251,6 +253,14 @@ startup
 
 start
 {
+	if(settings["betaStart"])
+	{
+		if(old.chapterselectPhase != current.chapterselectPhase && current.chapterselectPhase == "00_30_A_RobotM_Prologue_STG1" && current.phaseName == "START")
+		{
+			return true;
+		}
+	}
+	
 	// Thanks Kate for this auto-start logic
 	if ((current.playerNameSetStatus == 1 || !settings["detectNewGame"]) && current.isWorldLoaded && !old.isWorldLoaded)
 	{
